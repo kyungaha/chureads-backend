@@ -17,7 +17,7 @@ router.get("/", async(req, res) => {
         const content = await collection.find().toArray();
         console.log(`content :  ${content}`);
 
-        res.status(200).json({content})
+        res.status(200).json(content)
         console.log("GET요청성공");
     } catch (error) {
         console.log(`GET요청에러: ${error}`);
