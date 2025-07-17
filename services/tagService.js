@@ -77,7 +77,7 @@ export const generateTags = async (content) => {
    console.log("🚀 ~ generateTags ~ tags:", tags)
    
 //    console.log("data", data);
-   return data;
+   return tags;
  } catch (error) {
    console.log(error);
    throw error;
