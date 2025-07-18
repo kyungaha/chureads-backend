@@ -1,5 +1,6 @@
 import express from 'express';
 import { generateTags } from '../services/tagService.js';
+import { ObjectId } from 'mongodb';
 
 // 게시물 관련 모든 API 엔드포인트를 관리하는 라우터
 const router = express.Router();
@@ -69,14 +70,21 @@ router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const post = req.body;
+
+    //GPT AI 로 태그 다시 생성 
+    const tags = await generateTags(post.content);
+    console.log("🚀 ~ router.post ~ UPDATE tags:", tags)
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { content: post.content, updatedAt: new Date() } } // 지정된 필드만 업데이트
+      { $set: { content: post.content, updatedAt: new Date(), tags } } // 지정된 필드만 업데이트
     );
+    console.log("🚀 ~ router.put ~ UPDATE result:", result)
     res.status(200).json(result);
   } catch (error) {
     console.log(error);
   }
+    
 });
 
 // DELETE /posts/:id - 특정 게시물 삭제
