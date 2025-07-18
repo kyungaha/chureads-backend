@@ -12,7 +12,8 @@ export const connectDB = async () => {
         // 1. 클라이언트 객체생성 (URI 호출)
         // 2. 생성한 클라이언트 connect
         // 3. 클라이언트에 db이름 부여
-        const MONGODB_URI=process.env.MONGODB_URI_LOCAL;
+        // const MONGODB_URI=process.env.MONGODB_URI_LOCAL;
+        const MONGODB_URI=process.env.MODE_ENV==='development'?process.env.MONGODB_URI_LOCAL:process.env.MONGODB_URI_ATLAS;
         console.log("🚀 ~ connectDB ~ MONGODB_URI:", MONGODB_URI);
     
         const client = new MongoClient(MONGODB_URI);
