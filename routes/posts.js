@@ -1,6 +1,7 @@
 import express from 'express';
 import { generateTags } from '../services/tagService.js';
 import { ObjectId } from 'mongodb';
+import { broadcastToClients } from '../sse/sseManager.js';
 
 // 게시물 관련 모든 API 엔드포인트를 관리하는 라우터
 const router = express.Router();
@@ -55,8 +56,18 @@ router.post("/", async (req, res) => {
       tags,
       createdAt: new Date(),
     };
+
     const result = await collection.insertOne(newItem);
     
+    // 새 게시물 알림을 모든 클라이언트에게 전송
+    broadcastToClients("newPost", {
+      postId: result.insertedId,
+      userName : newItem.userName,
+      content: newItem.content.substring(0, 20) + (newItem.content.length > 20 ? "..." : ""),
+      createdAt : newItem.createdAt,
+      message : `${newItem.userName}이 새 글을 작성했습니다.`
+    });
+
     // TODO: 새 게시물 알림을 모든 클라이언트에게 전송
     // res.status(201).json(result);
     res.status(201).json({...result, tags})
@@ -64,6 +75,7 @@ router.post("/", async (req, res) => {
     console.log(error);
   }
 });
+
 // PUT /posts/:id - 특정 게시물 수정
 router.put("/:id", async (req, res) => {
   // URL 파라미터에서 게시물 ID를 받아서 해당 게시물을 수정
